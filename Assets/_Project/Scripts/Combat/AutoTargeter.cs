@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Trova automaticamente il bersaglio più vicino entro un raggio:
@@ -64,6 +66,22 @@ public class AutoTargeter : MonoBehaviour
         }
 
         return best;
+    }
+
+    public Health[] FindAllTargetsinRange(float radius)
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, range, targetMask, QueryTriggerInteraction.Collide);
+
+        List<Health> aliveTargets = new();
+        foreach (Collider hit in hits)
+        {
+            if(hit.TryGetComponent(out Health health) && !health.IsDead)
+            {
+                aliveTargets.Add(health);
+            }
+        }
+
+        return aliveTargets.ToArray();
     }
 
     private bool IsStillValid(Health target)
